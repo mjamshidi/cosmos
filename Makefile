@@ -139,10 +139,16 @@ CFLAGS		+= -fPIC
 CFLAGS		+= -Wall -Wstrict-prototypes
 CFLAGS		+= -Wno-format-zero-length
 
-LDFLAGS		+= -lxenctrl
-LDFLAGS		+= -lxenguest
-LDFLAGS		+= -lxenstore
-LDFLAGS		+= -luuid -ldl -lutil
+#LDFLAGS		+= -lxenctrl
+#LDFLAGS		+= -lxenguest
+#LDFLAGS		+= -lxenstore
+#LDFLAGS		+= -luuid -ldl -lutil
+
+COS_LDFLAGS += -ldl -lutil
+COS_LDFLAGS += -lxenctrl
+COS_LDFLAGS += -lxenguest
+COS_LDFLAGS += -lxenstore
+COS_LDFLAGS += -luuid
 
 ifeq ($(debug),y)
 CFLAGS		+= -O0 -g
@@ -176,7 +182,7 @@ $(LIB_DIR)/libxcl.so: LDFLAGS += -shared
 $(LIB_DIR)/libxcl.so: $(LIBXCL_OBJS) | bootstrap
 	$(call verbose_cmd,$(LN) libxcl.so,'LN ',$@.$(LIBXCL_VERSION))
 	$(call verbose_cmd,$(LN) libxcl.so,'LN ',$@.$(LIBXCL_VERSION_MAJOR))
-	$(call cclink,$^,'LD ')
+	$(call cclink,$^ $(COS_LDFLAGS),'LD ')
 
 
 .PHONY: libxcl
@@ -243,7 +249,7 @@ $(LIB_DIR)/libcosmos.so: LDFLAGS += -shared
 $(LIB_DIR)/libcosmos.so: $(LIBCOSMOS_OBJS) | bootstrap
 	$(call verbose_cmd,$(LN) libcosmos.so,'LN ',$@.$(LIBCOSMOS_VERSION))
 	$(call verbose_cmd,$(LN) libcosmos.so,'LN ',$@.$(LIBCOSMOS_VERSION_MAJOR))
-	$(call cclink,$^,'LD ')
+	$(call cclink,$^ $(COS_LDFLAGS),'LD ')
 
 
 .PHONY: libcosmos
@@ -283,7 +289,7 @@ $(COSMOS_BUILD_DIR)/%.o: $(SOURCE_DIR)/%.c | bootstrap
 
 $(COSMOS_APP): LDFLAGS+=$(LIBCOSMOS_LDFLAGS)
 $(COSMOS_APP): $(COSMOS_OBJS) | bootstrap
-	$(call cclink,$^,'LD ')
+	$(call cclink,$^ $(COS_LDFLAGS),'LD ')
 
 
 .PHONY: cosmos
